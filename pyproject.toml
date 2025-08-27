@@ -1,0 +1,9 @@
+[project]
+name = "flask-web-app"
+version = "0.1.0"
+description = "A minimal Flask web application"
+requires-python = ">=3.8"
+dependencies = [
+    "flask",
+    "autopep8",
+]

@@ -1,0 +1,7 @@
+.venv/
+node_modules/
+.next/
+dist/
+.bmad-core
+.claude/
+web-bundles/

@@ -1,0 +1,13 @@
+{
+  "name": "auth-system-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for authentication system",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:install": "playwright install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}

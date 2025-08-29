@@ -157,6 +157,6 @@ secrets.yml
 profile_default/
 ipython_config.py
 
-# Exclude sensitive README files
-README.md
-!README.template.md
+# Keep main README, exclude sensitive ones
+!README.md
+docs/GEMINI.md

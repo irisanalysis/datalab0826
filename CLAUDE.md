@@ -23,6 +23,18 @@ uv run python -u -m flask --app main run -p $PORT --debug
 
 # Run without debug mode
 uv run python main.py
+
+# Run with Docker (from docker/ directory)
+cd docker && docker-compose up -d
+```
+
+### Testing
+```bash
+# Run API tests
+./tests/test_api.sh
+
+# Run E2E tests
+./tests/test_e2e.sh
 ```
 
 ### Code Formatting
@@ -33,22 +45,40 @@ uv run autopep8 --in-place --recursive .
 
 ## Architecture
 
-This is a minimal Flask web application with the following structure:
+This is a Flask web application with JWT authentication and PostgreSQL database:
 
-- **main.py**: Flask application entry point with single route serving static HTML
-- **src/index.html**: Static HTML content served at root route
-- **pyproject.toml**: Python project configuration and dependencies managed by uv
-- **devserver.sh**: Development server startup script using uv
-- **.idx/dev.nix**: IDX workspace configuration with Python 3, Node.js 20, and automatic setup
+### Core Files
+- **main.py**: Flask application with JWT authentication, SQLAlchemy models, and API endpoints
+- **src/index.html**: Static HTML frontend served at root route
+- **pyproject.toml**: Python project configuration and dependencies
+- **devserver.sh**: Development server startup script
+- **requirements.txt**: Python dependencies
+- **.env**: Environment configuration (not in repo)
+- **.env.example**: Environment template
 
-The application follows a simple pattern:
-- Single Flask route (`/`) serves static HTML file
-- No templates, database, or complex routing
-- Development environment uses uv to manage dependencies and run Flask's development server with debug mode
-- Port configured via environment variable (defaults to 80)
+### Directory Structure
+- **api/**: FastAPI backend (separate service)
+- **web/**: Next.js frontend (separate service)
+- **src/**: Static HTML files for Flask app
+- **docs/**: Documentation (README, SECURITY, INSTALL guides)
+- **tests/**: Test scripts and files
+- **scripts/**: Utility and deployment scripts
+- **docker/**: Docker-related files (docker-compose.yml)
+- **tools/**: CLI tools and dependencies
+
+### Features
+- JWT access and refresh tokens
+- PostgreSQL database with SQLAlchemy
+- User authentication (register, login, logout)
+- Password hashing with bcrypt
+- CORS support
+- Health check endpoint
 
 ## Key Files
 
-- `main.py:8` - Main route handler serving HTML file
-- `main.py:12` - Port configuration from environment
-- `devserver.sh:2` - Development server command using uv with Flask debug mode
+- `main.py:90` - Main route handler serving HTML file
+- `main.py:246` - Port configuration and app startup
+- `main.py:94-230` - Authentication API endpoints
+- `devserver.sh` - Development server command using uv with Flask debug mode
+- `docker/docker-compose.yml` - Multi-service Docker setup
+- `tests/test_api.sh` - API testing script

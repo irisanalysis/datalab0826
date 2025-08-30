@@ -5,3 +5,7 @@ dist/
 .bmad-core
 .claude/
 web-bundles/
+
+frontend/node_modules/
+backend/.uv-venv/
+backend/.venv/

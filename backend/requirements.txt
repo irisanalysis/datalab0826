@@ -1,0 +1,48 @@
+# FastAPI Backend Requirements
+# =============================================================================
+
+# Core FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic[email]==2.5.0
+pydantic-settings==2.1.0
+
+# Database
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.7
+alembic==1.12.0
+
+# Authentication and Security
+PyJWT==2.8.0
+bcrypt==4.0.1
+cryptography==41.0.4
+python-multipart==0.0.6
+
+# HTTP and networking
+httpx==0.25.2
+requests==2.31.0
+
+# Data processing and analysis
+pandas==2.0.3
+numpy==1.24.4
+
+# Environment and configuration
+python-dotenv==1.0.0
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Optional data connectors (uncomment as needed)
+# pymongo==4.5.0  # For MongoDB
+# redis==4.6.0  # For Redis
+# openpyxl==3.1.2  # For Excel files
+# PyMySQL==1.1.0  # For MySQL
+
+# Distributed computing (for compute service)
+# ray[default]==2.8.0
+# dask[complete]==2023.10.1
+# celery[redis]==5.3.4

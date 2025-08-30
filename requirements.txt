@@ -11,3 +11,17 @@ psycopg2-binary==2.9.7
 bcrypt==4.0.1
 python-dotenv==1.0.0
 alembic==1.12.0
+
+# Data Analysis Platform Dependencies
+# Data connectors
+pandas==2.0.3
+requests==2.31.0
+PyMySQL==1.1.0
+
+# Security and encryption
+cryptography==41.0.4
+
+# Optional data connectors (uncomment as needed)
+# pymongo==4.5.0  # For MongoDB
+# redis==4.6.0  # For Redis
+# openpyxl==3.1.2  # For Excel files

@@ -1,10 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户认证系统 - User Authentication System</title>
+    <title>DataLab - 企业级数据分析平台</title>
     <style>
+        /* ===== CSS变量系统 ===== */
+        :root {
+            /* 品牌色彩 */
+            --primary-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            
+            /* 中性色彩 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-dark: #1a202c;
+            --bg-sidebar: #2d3748;
+            --bg-sidebar-hover: #4a5568;
+            
+            /* 文本色彩 */
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #a0aec0;
+            --text-white: #ffffff;
+            
+            /* 边框色彩 */
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e0;
+            
+            /* 状态色彩 */
+            --success: #48bb78;
+            --warning: #ed8936;
+            --error: #f56565;
+            --info: #4299e1;
+            
+            /* 尺寸变量 */
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 64px;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            
+            /* 动画 */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== 基础样式重置 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -12,8 +54,15 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+        }
+
+        /* ===== 登录界面样式 ===== */
+        body.auth-mode {
+            background: var(--primary-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,243 +70,945 @@
             padding: 20px;
         }
 
-        .container {
-            background: white;
-            border-radius: 20px;
+        .auth-container {
+            background: var(--bg-primary);
+            border-radius: 16px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            backdrop-filter: blur(10px);
         }
 
-        .hidden {
-            display: none !important;
-        }
-
-        .title {
+        .auth-title {
             text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 32px;
+            color: var(--text-primary);
             font-size: 28px;
-            font-weight: 300;
+            font-weight: 700;
         }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        label {
+        .form-label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-secondary);
             font-weight: 500;
+            font-size: 14px;
         }
 
-        input[type="email"], input[type="password"] {
+        .form-input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: var(--border-radius);
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            transition: var(--transition);
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
 
-        input[type="email"]:focus, input[type="password"]:focus {
+        .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
         }
 
-        .btn {
+        .form-button {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 14px 16px;
+            background: var(--primary-gradient);
+            color: var(--text-white);
             border: none;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.3s ease;
-            margin-bottom: 15px;
+            transition: var(--transition);
+            margin-bottom: 16px;
         }
 
-        .btn:hover {
-            opacity: 0.9;
+        .form-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(255, 107, 53, 0.4);
         }
 
-        .btn:disabled {
+        .form-button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #667eea;
-            border: 2px solid #667eea;
+        .form-button-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
         }
 
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
+        .form-button-secondary:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: var(--text-white);
         }
 
-        .error {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 10px;
-            padding: 10px;
-            background: #f8d7da;
-            border-radius: 5px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .success {
-            color: #155724;
-            font-size: 14px;
-            margin-top: 10px;
-            padding: 10px;
-            background: #d4edda;
-            border-radius: 5px;
-            border: 1px solid #c3e6cb;
-        }
-
-        .switch-form {
+        .form-switch {
             text-align: center;
             margin-top: 20px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
-        .switch-form a {
-            color: #667eea;
+        .form-switch-link {
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
+            transition: var(--transition);
         }
 
-        .switch-form a:hover {
+        .form-switch-link:hover {
             text-decoration: underline;
         }
 
-        .user-info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .form-message {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            margin-top: 16px;
         }
 
-        .user-info h3 {
-            margin-bottom: 10px;
-            color: #333;
+        .form-message.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
         }
 
-        .user-info p {
-            color: #666;
-            margin-bottom: 5px;
+        .form-message.success {
+            background: #f0fff4;
+            border: 1px solid #bbf7d0;
+            color: #059669;
         }
 
         .password-strength {
-            margin-top: 5px;
+            margin-top: 6px;
             font-size: 12px;
+            font-weight: 500;
         }
 
-        .strength-weak { color: #dc3545; }
-        .strength-medium { color: #fd7e14; }
-        .strength-strong { color: #28a745; }
+        .password-strength.weak { color: var(--error); }
+        .password-strength.medium { color: var(--warning); }
+        .password-strength.strong { color: var(--success); }
+
+        /* ===== 平台主界面样式 ===== */
+        .platform-layout {
+            display: flex;
+            height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            color: var(--text-white);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--bg-sidebar-hover);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+            overflow-y: auto;
+            height: calc(100vh - var(--header-height));
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            color: var(--text-muted);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-sidebar-hover);
+            color: var(--text-white);
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            background: var(--bg-sidebar-hover);
+            color: var(--text-white);
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .nav-text {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        /* 顶部头部 */
+        .main-header {
+            height: var(--header-height);
+            background: var(--primary-gradient);
+            color: var(--text-white);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 5;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-box {
+            position: relative;
+            display: none;
+        }
+
+        .search-input {
+            padding: 8px 16px 8px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            font-size: 14px;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            width: 300px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-avatar:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+        }
+
+        .page-content {
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            min-height: calc(100vh - var(--header-height) - 48px);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        /* 快速访问区域 */
+        .quick-access {
+            background: var(--bg-primary);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .quick-access-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .quick-action {
+            padding: 16px;
+            border: 2px solid var(--border-light);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .quick-action-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .quick-action-text {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* 通用工具类 */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-light);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== 响应式设计 ===== */
+        @media (max-width: 1024px) {
+            .search-box {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 100vw;
+                --sidebar-collapsed-width: 0px;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .content-area {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 24px;
+                margin: 16px;
+            }
+            
+            .content-area {
+                padding: 12px;
+            }
+            
+            .stat-card {
+                padding: 16px;
+            }
+            
+            .quick-access {
+                padding: 16px;
+            }
+        }
+
+        /* ===== 动画和过渡效果 ===== */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 高级组件样式 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 24px 0;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 0 24px;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: var(--text-white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-medium);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* 状态标签 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Login Form -->
+<body class="auth-mode">
+    <!-- 登录界面 -->
+    <div id="authContainer" class="auth-container">
+        <!-- 登录表单 -->
         <div id="loginForm" class="auth-form">
-            <h1 class="title">登录 Login</h1>
+            <h1 class="auth-title">欢迎登录</h1>
             <form id="loginFormElement">
                 <div class="form-group">
-                    <label for="loginEmail">邮箱 Email</label>
-                    <input type="email" id="loginEmail" required>
+                    <label for="loginEmail" class="form-label">邮箱地址</label>
+                    <input type="email" id="loginEmail" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">密码 Password</label>
-                    <input type="password" id="loginPassword" required>
+                    <label for="loginPassword" class="form-label">密码</label>
+                    <input type="password" id="loginPassword" class="form-input" required>
                 </div>
-                <button type="submit" class="btn" id="loginBtn">登录 Login</button>
-                <div id="loginError" class="error hidden"></div>
-                <div class="switch-form">
-                    没有账号？ Don't have an account? 
-                    <a href="#" id="showRegister">立即注册 Register</a>
+                <button type="submit" class="form-button" id="loginBtn">登录</button>
+                <div id="loginError" class="form-message error hidden"></div>
+                <div class="form-switch">
+                    还没有账号？
+                    <a href="#" id="showRegister" class="form-switch-link">立即注册</a>
                 </div>
             </form>
         </div>
 
-        <!-- Register Form -->
+        <!-- 注册表单 -->
         <div id="registerForm" class="auth-form hidden">
-            <h1 class="title">注册 Register</h1>
+            <h1 class="auth-title">创建账号</h1>
             <form id="registerFormElement">
                 <div class="form-group">
-                    <label for="registerEmail">邮箱 Email</label>
-                    <input type="email" id="registerEmail" required>
+                    <label for="registerEmail" class="form-label">邮箱地址</label>
+                    <input type="email" id="registerEmail" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label for="registerPassword">密码 Password</label>
-                    <input type="password" id="registerPassword" required>
+                    <label for="registerPassword" class="form-label">密码</label>
+                    <input type="password" id="registerPassword" class="form-input" required>
                     <div id="passwordStrength" class="password-strength"></div>
                 </div>
                 <div class="form-group">
-                    <label for="confirmPassword">确认密码 Confirm Password</label>
-                    <input type="password" id="confirmPassword" required>
+                    <label for="confirmPassword" class="form-label">确认密码</label>
+                    <input type="password" id="confirmPassword" class="form-input" required>
                 </div>
-                <button type="submit" class="btn" id="registerBtn">注册 Register</button>
-                <div id="registerError" class="error hidden"></div>
-                <div id="registerSuccess" class="success hidden"></div>
-                <div class="switch-form">
-                    已有账号？ Already have an account? 
-                    <a href="#" id="showLogin">立即登录 Login</a>
+                <button type="submit" class="form-button" id="registerBtn">注册</button>
+                <div id="registerError" class="form-message error hidden"></div>
+                <div id="registerSuccess" class="form-message success hidden"></div>
+                <div class="form-switch">
+                    已有账号？
+                    <a href="#" id="showLogin" class="form-switch-link">立即登录</a>
                 </div>
             </form>
         </div>
+    </div>
 
-        <!-- Dashboard -->
-        <div id="dashboard" class="hidden">
-            <h1 class="title">用户面板 Dashboard</h1>
-            <div id="userInfo" class="user-info">
-                <h3>用户信息 User Information</h3>
-                <p><strong>邮箱 Email:</strong> <span id="userEmail"></span></p>
-                <p><strong>用户ID User ID:</strong> <span id="userId"></span></p>
-                <p><strong>注册时间 Created At:</strong> <span id="userCreatedAt"></span></p>
+    <!-- SaaS平台主界面 -->
+    <div id="platformContainer" class="platform-layout hidden">
+        <!-- 侧边栏 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">DL</div>
+                    <span class="logo-text">DataLab</span>
+                </div>
             </div>
-            <button id="refreshBtn" class="btn btn-secondary">刷新令牌 Refresh Token</button>
-            <button id="logoutBtn" class="btn">退出登录 Logout</button>
-            <div id="dashboardError" class="error hidden"></div>
-        </div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-page="overview">
+                    <div class="nav-icon">📊</div>
+                    <span class="nav-text">概览</span>
+                </div>
+                <div class="nav-item" data-page="datasources">
+                    <div class="nav-icon">🔌</div>
+                    <span class="nav-text">数据源</span>
+                </div>
+                <div class="nav-item" data-page="dashboards">
+                    <div class="nav-icon">📈</div>
+                    <span class="nav-text">仪表板</span>
+                </div>
+                <div class="nav-item" data-page="analytics">
+                    <div class="nav-icon">🔍</div>
+                    <span class="nav-text">分析</span>
+                </div>
+                <div class="nav-item" data-page="reports">
+                    <div class="nav-icon">📑</div>
+                    <span class="nav-text">报告</span>
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <div class="nav-icon">⚙️</div>
+                    <span class="nav-text">设置</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部头部 -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <h1 class="page-title" id="pageTitle">概览</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <div class="search-icon">🔍</div>
+                        <input type="text" class="search-input" placeholder="搜索数据、报告...">
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-item" id="profileBtn">个人资料</div>
+                            <div class="dropdown-item" id="settingsBtn">账户设置</div>
+                            <div class="dropdown-item" id="logoutBtn">退出登录</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content-area">
+                <div class="page-content slide-in" id="pageContent">
+                    <!-- 动态内容将在这里加载 -->
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        class AuthSystem {
+        class DataLabApp {
             constructor() {
+                this.currentUser = null;
+                this.currentPage = 'overview';
+                this.sidebarCollapsed = false;
                 this.accessToken = localStorage.getItem('access_token');
                 this.refreshToken = localStorage.getItem('refresh_token');
+                
                 this.init();
             }
 
             init() {
                 this.bindEvents();
+                
+                // 检查是否已登录
                 if (this.accessToken) {
-                    this.showDashboard();
+                    this.showPlatform();
                     this.loadUserInfo();
+                    this.loadCurrentPage();
+                } else {
+                    this.showAuth();
                 }
             }
 
             bindEvents() {
-                // Form submissions
+                // 表单事件
                 document.getElementById('loginFormElement').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    this.login();
+                    this.handleLogin();
                 });
 
                 document.getElementById('registerFormElement').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    this.register();
+                    this.handleRegister();
                 });
 
-                // Form switching
+                // 表单切换
                 document.getElementById('showRegister').addEventListener('click', (e) => {
                     e.preventDefault();
                     this.showRegisterForm();
@@ -268,21 +1019,138 @@
                     this.showLoginForm();
                 });
 
-                // Dashboard actions
+                // 平台界面事件
+                document.getElementById('menuToggle').addEventListener('click', () => {
+                    this.toggleSidebar();
+                });
+
+                // 导航事件
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const page = item.dataset.page;
+                        this.navigateTo(page);
+                    });
+                });
+
+                // 用户菜单事件
+                document.getElementById('userAvatar').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggleUserDropdown();
+                });
+
+                document.addEventListener('click', () => {
+                    this.hideUserDropdown();
+                });
+
                 document.getElementById('logoutBtn').addEventListener('click', () => {
-                    this.logout();
+                    this.handleLogout();
                 });
 
-                document.getElementById('refreshBtn').addEventListener('click', () => {
-                    this.refreshAccessToken();
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    this.navigateTo('settings');
                 });
 
-                // Password strength check
+                // 密码强度检查
                 document.getElementById('registerPassword').addEventListener('input', (e) => {
                     this.checkPasswordStrength(e.target.value);
                 });
+
+                // 响应式事件
+                window.addEventListener('resize', () => {
+                    this.handleResize();
+                });
             }
 
+            // ===== 认证相关方法 =====
+            async handleLogin() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                const loginBtn = document.getElementById('loginBtn');
+                const errorDiv = document.getElementById('loginError');
+
+                this.setLoading(loginBtn, true, '登录中...');
+                this.hideMessage('loginError');
+
+                try {
+                    const response = await this.apiCall('/api/auth/login', 'POST', { email, password });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.accessToken = data.access_token;
+                        this.refreshToken = data.refresh_token;
+                        this.currentUser = data.user;
+                        
+                        localStorage.setItem('access_token', this.accessToken);
+                        localStorage.setItem('refresh_token', this.refreshToken);
+                        
+                        this.showPlatform();
+                        this.loadCurrentPage();
+                    } else {
+                        this.showMessage('loginError', data.error || '登录失败，请检查邮箱和密码', 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('loginError', '网络连接失败，请稍后再试', 'error');
+                } finally {
+                    this.setLoading(loginBtn, false, '登录');
+                }
+            }
+
+            async handleRegister() {
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const registerBtn = document.getElementById('registerBtn');
+
+                if (password !== confirmPassword) {
+                    this.showMessage('registerError', '两次输入的密码不一致', 'error');
+                    return;
+                }
+
+                this.setLoading(registerBtn, true, '注册中...');
+                this.hideMessage('registerError');
+                this.hideMessage('registerSuccess');
+
+                try {
+                    const response = await this.apiCall('/api/auth/register', 'POST', { email, password });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        this.showMessage('registerSuccess', '注册成功！正在跳转到登录页面...', 'success');
+                        document.getElementById('registerFormElement').reset();
+                        document.getElementById('passwordStrength').textContent = '';
+                        
+                        setTimeout(() => {
+                            this.showLoginForm();
+                            document.getElementById('loginEmail').value = email;
+                        }, 2000);
+                    } else {
+                        this.showMessage('registerError', data.error || '注册失败，请稍后再试', 'error');
+                    }
+                } catch (error) {
+                    this.showMessage('registerError', '网络连接失败，请稍后再试', 'error');
+                } finally {
+                    this.setLoading(registerBtn, false, '注册');
+                }
+            }
+
+            async handleLogout() {
+                try {
+                    if (this.accessToken) {
+                        await this.apiCall('/api/auth/logout', 'POST');
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    this.accessToken = null;
+                    this.refreshToken = null;
+                    this.currentUser = null;
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    this.showAuth();
+                }
+            }
+
+            // ===== API相关方法 =====
             async apiCall(endpoint, method = 'GET', data = null) {
                 const config = {
                     method,
@@ -295,113 +1163,28 @@
                     config.body = JSON.stringify(data);
                 }
 
-                if (this.accessToken && endpoint !== '/api/auth/login' && endpoint !== '/api/auth/register') {
+                if (this.accessToken && !endpoint.includes('/auth/')) {
                     config.headers['Authorization'] = `Bearer ${this.accessToken}`;
                 }
 
                 const response = await fetch(endpoint, config);
+                
+                // 处理401错误（token过期）
+                if (response.status === 401 && !endpoint.includes('/auth/')) {
+                    await this.refreshAccessToken();
+                    // 重试请求
+                    if (this.accessToken) {
+                        config.headers['Authorization'] = `Bearer ${this.accessToken}`;
+                        return fetch(endpoint, config);
+                    }
+                }
+                
                 return response;
-            }
-
-            async login() {
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                const loginBtn = document.getElementById('loginBtn');
-                const errorDiv = document.getElementById('loginError');
-
-                loginBtn.disabled = true;
-                loginBtn.textContent = '登录中... Logging in...';
-                errorDiv.classList.add('hidden');
-
-                try {
-                    const response = await this.apiCall('/api/auth/login', 'POST', { email, password });
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        this.accessToken = data.access_token;
-                        this.refreshToken = data.refresh_token;
-                        localStorage.setItem('access_token', this.accessToken);
-                        localStorage.setItem('refresh_token', this.refreshToken);
-                        localStorage.setItem('user_info', JSON.stringify(data.user));
-                        
-                        this.showDashboard();
-                        this.loadUserInfo();
-                    } else {
-                        this.showError('loginError', data.error || '登录失败 Login failed');
-                    }
-                } catch (error) {
-                    this.showError('loginError', '网络错误 Network error');
-                } finally {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = '登录 Login';
-                }
-            }
-
-            async register() {
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const registerBtn = document.getElementById('registerBtn');
-                const errorDiv = document.getElementById('registerError');
-                const successDiv = document.getElementById('registerSuccess');
-
-                registerBtn.disabled = true;
-                registerBtn.textContent = '注册中... Registering...';
-                errorDiv.classList.add('hidden');
-                successDiv.classList.add('hidden');
-
-                if (password !== confirmPassword) {
-                    this.showError('registerError', '密码不匹配 Passwords do not match');
-                    registerBtn.disabled = false;
-                    registerBtn.textContent = '注册 Register';
-                    return;
-                }
-
-                try {
-                    const response = await this.apiCall('/api/auth/register', 'POST', { email, password });
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        successDiv.textContent = '注册成功！请登录 Registration successful! Please login';
-                        successDiv.classList.remove('hidden');
-                        document.getElementById('registerFormElement').reset();
-                        document.getElementById('passwordStrength').textContent = '';
-                        
-                        setTimeout(() => {
-                            this.showLoginForm();
-                            document.getElementById('loginEmail').value = email;
-                        }, 2000);
-                    } else {
-                        this.showError('registerError', data.error || '注册失败 Registration failed');
-                    }
-                } catch (error) {
-                    this.showError('registerError', '网络错误 Network error');
-                } finally {
-                    registerBtn.disabled = false;
-                    registerBtn.textContent = '注册 Register';
-                }
-            }
-
-            async loadUserInfo() {
-                try {
-                    const response = await this.apiCall('/api/me');
-                    
-                    if (response.ok) {
-                        const user = await response.json();
-                        document.getElementById('userEmail').textContent = user.email;
-                        document.getElementById('userId').textContent = user.id;
-                        document.getElementById('userCreatedAt').textContent = new Date(user.created_at).toLocaleString();
-                    } else if (response.status === 401) {
-                        this.logout();
-                    }
-                } catch (error) {
-                    this.showError('dashboardError', '加载用户信息失败 Failed to load user info');
-                }
             }
 
             async refreshAccessToken() {
                 if (!this.refreshToken) {
-                    this.logout();
+                    this.handleLogout();
                     return;
                 }
 
@@ -420,35 +1203,472 @@
                         this.refreshToken = data.refresh_token;
                         localStorage.setItem('access_token', this.accessToken);
                         localStorage.setItem('refresh_token', this.refreshToken);
-                        
-                        this.showError('dashboardError', '令牌已刷新 Token refreshed');
-                        document.getElementById('dashboardError').className = 'success';
-                        setTimeout(() => {
-                            document.getElementById('dashboardError').classList.add('hidden');
-                        }, 2000);
                     } else {
-                        this.logout();
+                        this.handleLogout();
                     }
                 } catch (error) {
-                    this.logout();
+                    this.handleLogout();
                 }
             }
 
-            async logout() {
+            async loadUserInfo() {
                 try {
-                    if (this.accessToken) {
-                        await this.apiCall('/api/auth/logout', 'POST');
+                    const response = await this.apiCall('/api/me');
+                    if (response.ok) {
+                        this.currentUser = await response.json();
+                        this.updateUserInterface();
                     }
                 } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    this.accessToken = null;
-                    this.refreshToken = null;
-                    localStorage.removeItem('access_token');
-                    localStorage.removeItem('refresh_token');
-                    localStorage.removeItem('user_info');
-                    this.showLoginForm();
+                    console.error('Failed to load user info:', error);
                 }
+            }
+
+            // ===== UI界面切换方法 =====
+            showAuth() {
+                document.body.className = 'auth-mode';
+                document.getElementById('authContainer').classList.remove('hidden');
+                document.getElementById('platformContainer').classList.add('hidden');
+            }
+
+            showPlatform() {
+                document.body.className = '';
+                document.getElementById('authContainer').classList.add('hidden');
+                document.getElementById('platformContainer').classList.remove('hidden');
+            }
+
+            showLoginForm() {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                this.clearMessages();
+            }
+
+            showRegisterForm() {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                this.clearMessages();
+            }
+
+            // ===== 平台界面方法 =====
+            navigateTo(page) {
+                // 更新导航状态
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-page="${page}"]`).classList.add('active');
+                
+                // 更新页面标题
+                const titles = {
+                    overview: '概览',
+                    datasources: '数据源',
+                    dashboards: '仪表板',
+                    analytics: '分析',
+                    reports: '报告',
+                    settings: '设置'
+                };
+                
+                document.getElementById('pageTitle').textContent = titles[page] || '概览';
+                this.currentPage = page;
+                
+                // 加载页面内容
+                this.loadCurrentPage();
+            }
+
+            toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('collapsed');
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+            }
+
+            toggleUserDropdown() {
+                const dropdown = document.getElementById('userDropdown');
+                dropdown.classList.toggle('show');
+            }
+
+            hideUserDropdown() {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+
+            updateUserInterface() {
+                if (this.currentUser) {
+                    const userAvatar = document.getElementById('userAvatar');
+                    userAvatar.textContent = this.currentUser.email.charAt(0).toUpperCase();
+                }
+            }
+
+            loadCurrentPage() {
+                const content = document.getElementById('pageContent');
+                content.innerHTML = this.getPageContent(this.currentPage);
+                content.classList.remove('slide-in');
+                setTimeout(() => content.classList.add('slide-in'), 10);
+                
+                // 加载页面特定的数据
+                this.loadPageData(this.currentPage);
+            }
+
+            getPageContent(page) {
+                switch (page) {
+                    case 'overview':
+                        return this.getOverviewContent();
+                    case 'datasources':
+                        return this.getDataSourcesContent();
+                    case 'dashboards':
+                        return this.getDashboardsContent();
+                    case 'analytics':
+                        return this.getAnalyticsContent();
+                    case 'reports':
+                        return this.getReportsContent();
+                    case 'settings':
+                        return this.getSettingsContent();
+                    default:
+                        return this.getOverviewContent();
+                }
+            }
+
+            getOverviewContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+                            数据概览
+                        </h2>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="dataSources">-</div>
+                                <div class="stat-label">数据源总数</div>
+                                <div class="stat-change positive">+12% 本月</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="activeDashboards">-</div>
+                                <div class="stat-label">活跃仪表板</div>
+                                <div class="stat-change positive">+8% 本周</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="dataQueries">-</div>
+                                <div class="stat-label">今日查询次数</div>
+                                <div class="stat-change negative">-3% 较昨日</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="activeUsers">-</div>
+                                <div class="stat-label">活跃用户</div>
+                                <div class="stat-change positive">+15% 本周</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-access">
+                            <h3 class="quick-access-title">快速访问</h3>
+                            <div class="quick-actions">
+                                <div class="quick-action" onclick="app.navigateTo('datasources')">
+                                    <div class="quick-action-icon">🔌</div>
+                                    <div class="quick-action-text">连接数据源</div>
+                                </div>
+                                <div class="quick-action" onclick="app.navigateTo('dashboards')">
+                                    <div class="quick-action-icon">📊</div>
+                                    <div class="quick-action-text">创建仪表板</div>
+                                </div>
+                                <div class="quick-action" onclick="app.navigateTo('analytics')">
+                                    <div class="quick-action-icon">🔍</div>
+                                    <div class="quick-action-text">数据分析</div>
+                                </div>
+                                <div class="quick-action" onclick="app.navigateTo('reports')">
+                                    <div class="quick-action-icon">📑</div>
+                                    <div class="quick-action-text">生成报告</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getDataSourcesContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h2 style="font-size: 24px; font-weight: 600; color: var(--text-primary);">数据源管理</h2>
+                            <button class="btn btn-primary" onclick="app.showAddDataSourceModal()">
+                                <span>➕</span> 添加数据源
+                            </button>
+                        </div>
+                        
+                        <div id="dataSourcesList" style="background: var(--bg-primary); border-radius: var(--border-radius); padding: 24px;">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                <span>加载中...</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getDashboardsContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+                            仪表板
+                        </h2>
+                        <div style="text-align: center; padding: 80px 20px; color: var(--text-muted);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                            <h3 style="color: var(--text-secondary); margin-bottom: 8px;">仪表板功能开发中</h3>
+                            <p>即将为您提供强大的数据可视化功能</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getAnalyticsContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+                            数据分析
+                        </h2>
+                        <div style="text-align: center; padding: 80px 20px; color: var(--text-muted);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+                            <h3 style="color: var(--text-secondary); margin-bottom: 8px;">分析功能开发中</h3>
+                            <p>即将为您提供智能数据分析工具</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getReportsContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+                            报告中心
+                        </h2>
+                        <div style="text-align: center; padding: 80px 20px; color: var(--text-muted);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📑</div>
+                            <h3 style="color: var(--text-secondary); margin-bottom: 8px;">报告功能开发中</h3>
+                            <p>即将为您提供自动化报告生成功能</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getSettingsContent() {
+                return `
+                    <div style="padding: 32px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+                            账户设置
+                        </h2>
+                        
+                        <div style="background: var(--bg-primary); border-radius: var(--border-radius); padding: 24px;">
+                            <div class="form-group">
+                                <label class="form-label">邮箱地址</label>
+                                <div id="userEmailDisplay" style="padding: 12px; background: var(--bg-secondary); border-radius: var(--border-radius); color: var(--text-secondary);">
+                                    ${this.currentUser ? this.currentUser.email : '加载中...'}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">用户ID</label>
+                                <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--border-radius); color: var(--text-secondary); font-family: monospace;">
+                                    ${this.currentUser ? this.currentUser.id : '加载中...'}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">注册时间</label>
+                                <div style="padding: 12px; background: var(--bg-secondary); border-radius: var(--border-radius); color: var(--text-secondary);">
+                                    ${this.currentUser ? new Date(this.currentUser.created_at).toLocaleString('zh-CN') : '加载中...'}
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border-light); padding-top: 24px; margin-top: 24px;">
+                                <h3 style="color: var(--text-primary); margin-bottom: 16px;">安全操作</h3>
+                                <button class="btn btn-secondary" style="margin-right: 12px;">修改密码</button>
+                                <button class="btn btn-primary" onclick="app.handleLogout()">退出登录</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            async loadPageData(page) {
+                switch (page) {
+                    case 'overview':
+                        await this.loadOverviewData();
+                        break;
+                    case 'datasources':
+                        await this.loadDataSourcesData();
+                        break;
+                }
+            }
+
+            async loadOverviewData() {
+                try {
+                    // 模拟加载统计数据
+                    setTimeout(() => {
+                        document.getElementById('dataSources').textContent = '8';
+                        document.getElementById('activeDashboards').textContent = '12';
+                        document.getElementById('dataQueries').textContent = '1,247';
+                        document.getElementById('activeUsers').textContent = '24';
+                    }, 500);
+                } catch (error) {
+                    console.error('Failed to load overview data:', error);
+                }
+            }
+
+            async loadDataSourcesData() {
+                const listElement = document.getElementById('dataSourcesList');
+                if (!listElement) return;
+
+                try {
+                    // 模拟数据源列表
+                    setTimeout(() => {
+                        listElement.innerHTML = `
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>类型</th>
+                                        <th>状态</th>
+                                        <th>最后连接</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Production DB</strong></td>
+                                        <td>PostgreSQL</td>
+                                        <td><span class="status-badge success">已连接</span></td>
+                                        <td>2分钟前</td>
+                                        <td><button class="btn btn-secondary btn-small">管理</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analytics DB</strong></td>
+                                        <td>MySQL</td>
+                                        <td><span class="status-badge success">已连接</span></td>
+                                        <td>5分钟前</td>
+                                        <td><button class="btn btn-secondary btn-small">管理</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Sales Data</strong></td>
+                                        <td>CSV</td>
+                                        <td><span class="status-badge warning">待同步</span></td>
+                                        <td>1小时前</td>
+                                        <td><button class="btn btn-secondary btn-small">管理</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `;
+                    }, 800);
+                } catch (error) {
+                    listElement.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            加载失败，请稍后重试
+                        </div>
+                    `;
+                }
+            }
+
+            showAddDataSourceModal() {
+                // 创建模态框HTML
+                const modalHTML = `
+                    <div class="modal-overlay" id="addDataSourceModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title">添加数据源</h2>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">数据源名称</label>
+                                    <input type="text" class="form-input" id="dataSourceName" placeholder="请输入数据源名称">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">数据源类型</label>
+                                    <select class="form-input" id="dataSourceType">
+                                        <option value="postgresql">PostgreSQL</option>
+                                        <option value="mysql">MySQL</option>
+                                        <option value="mongodb">MongoDB</option>
+                                        <option value="csv">CSV文件</option>
+                                        <option value="api">REST API</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">连接信息</label>
+                                    <textarea class="form-input" id="dataSourceConfig" rows="4" placeholder="请输入连接配置信息..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" onclick="app.hideAddDataSourceModal()">取消</button>
+                                <button class="btn btn-primary" onclick="app.createDataSource()">创建</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加到页面
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // 显示模态框
+                setTimeout(() => {
+                    document.getElementById('addDataSourceModal').classList.add('show');
+                }, 10);
+                
+                // 点击背景关闭
+                document.getElementById('addDataSourceModal').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal-overlay')) {
+                        this.hideAddDataSourceModal();
+                    }
+                });
+            }
+
+            hideAddDataSourceModal() {
+                const modal = document.getElementById('addDataSourceModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                }
+            }
+
+            createDataSource() {
+                const name = document.getElementById('dataSourceName').value;
+                const type = document.getElementById('dataSourceType').value;
+                const config = document.getElementById('dataSourceConfig').value;
+                
+                if (!name.trim()) {
+                    alert('请输入数据源名称');
+                    return;
+                }
+                
+                // 模拟创建
+                alert('数据源创建成功！');
+                this.hideAddDataSourceModal();
+                
+                // 刷新列表
+                if (this.currentPage === 'datasources') {
+                    this.loadDataSourcesData();
+                }
+            }
+
+            // ===== 工具方法 =====
+            setLoading(element, loading, text) {
+                if (loading) {
+                    element.disabled = true;
+                    element.innerHTML = `<div class="loading"><div class="spinner"></div><span>${text}</span></div>`;
+                } else {
+                    element.disabled = false;
+                    element.textContent = text;
+                }
+            }
+
+            showMessage(elementId, message, type = 'error') {
+                const element = document.getElementById(elementId);
+                element.textContent = message;
+                element.className = `form-message ${type}`;
+                element.classList.remove('hidden');
+            }
+
+            hideMessage(elementId) {
+                document.getElementById(elementId).classList.add('hidden');
+            }
+
+            clearMessages() {
+                document.querySelectorAll('.form-message').forEach(msg => {
+                    msg.classList.add('hidden');
+                });
             }
 
             checkPasswordStrength(password) {
@@ -465,60 +1685,38 @@
                 switch (strength) {
                     case 0:
                     case 1:
-                        message = '密码强度：弱 Password strength: Weak';
-                        strengthDiv.className = 'password-strength strength-weak';
-                        break;
                     case 2:
+                        message = '密码强度：弱';
+                        strengthDiv.className = 'password-strength weak';
+                        break;
                     case 3:
-                        message = '密码强度：中等 Password strength: Medium';
-                        strengthDiv.className = 'password-strength strength-medium';
+                        message = '密码强度：中等';
+                        strengthDiv.className = 'password-strength medium';
                         break;
                     case 4:
                     case 5:
-                        message = '密码强度：强 Password strength: Strong';
-                        strengthDiv.className = 'password-strength strength-strong';
+                        message = '密码强度：强';
+                        strengthDiv.className = 'password-strength strong';
                         break;
                 }
 
                 strengthDiv.textContent = message;
             }
 
-            showError(elementId, message) {
-                const errorDiv = document.getElementById(elementId);
-                errorDiv.textContent = message;
-                errorDiv.classList.remove('hidden');
-            }
-
-            showLoginForm() {
-                document.getElementById('loginForm').classList.remove('hidden');
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-                this.clearErrors();
-            }
-
-            showRegisterForm() {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-                this.clearErrors();
-            }
-
-            showDashboard() {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                this.clearErrors();
-            }
-
-            clearErrors() {
-                const errorDivs = document.querySelectorAll('.error, .success');
-                errorDivs.forEach(div => div.classList.add('hidden'));
+            handleResize() {
+                // 移动端自动折叠侧边栏
+                if (window.innerWidth <= 768 && !this.sidebarCollapsed) {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.add('collapsed');
+                    this.sidebarCollapsed = true;
+                }
             }
         }
 
-        // Initialize the auth system when page loads
+        // 初始化应用
+        let app;
         document.addEventListener('DOMContentLoaded', () => {
-            new AuthSystem();
+            app = new DataLabApp();
         });
     </script>
 </body>
